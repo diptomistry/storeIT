@@ -14,15 +14,13 @@ export default async function FilesPage() {
       breadcrumb={data.breadcrumb}
       folderId={null}
     >
-      {(search) => (
-        <div className="space-y-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">My Files</h1>
-            <p className="mt-1 text-sm text-slate-500">Browse and manage your stored files.</p>
-          </div>
-          <FilesBrowser files={data.files} folders={data.folders} search={search} />
+      <div className="space-y-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">My Files</h1>
+          <p className="mt-1 text-sm text-slate-500">Browse and manage your stored files.</p>
         </div>
-      )}
+        <FilesBrowser files={data.files} folders={data.folders} />
+      </div>
     </AppFrame>
   );
 }

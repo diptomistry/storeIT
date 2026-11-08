@@ -51,6 +51,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useSearchQuery } from "@/components/layout/search-context";
 import { useFileActions } from "@/hooks/use-file-actions";
 import { formatBytes, formatRelativeDate } from "@/lib/utils/format";
 import { cn } from "@/lib/utils";
@@ -60,13 +61,12 @@ export function FilesBrowser({
   files,
   folders,
   mode = "files",
-  search = "",
 }: {
   files: FileRecord[];
   folders?: Folder[];
   mode?: "files" | "recent" | "starred" | "trash";
-  search?: string;
 }) {
+  const search = useSearchQuery();
   const actions = useFileActions();
   const [view, setView] = useState<ViewMode>("list");
   const [sortBy, setSortBy] = useState<SortField>("name");

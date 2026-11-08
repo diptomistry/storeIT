@@ -13,15 +13,13 @@ export default async function StarredPage() {
       quotaBytes={data.quotaBytes}
       breadcrumb={[{ id: null, name: "Starred" }]}
     >
-      {(search) => (
-        <div className="space-y-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Starred</h1>
-            <p className="mt-1 text-sm text-slate-500">Files you marked as important.</p>
-          </div>
-          <FilesBrowser files={data.files} mode="starred" search={search} />
+      <div className="space-y-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Starred</h1>
+          <p className="mt-1 text-sm text-slate-500">Files you marked as important.</p>
         </div>
-      )}
+        <FilesBrowser files={data.files} mode="starred" />
+      </div>
     </AppFrame>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { DashboardShell } from "@/components/layout/dashboard-shell";
+import { SearchProvider } from "@/components/layout/search-context";
 import type { BreadcrumbItem } from "@/types";
 
 export function AppFrame({
@@ -15,7 +16,7 @@ export function AppFrame({
   folderId = null,
   enableSearch = true,
 }: {
-  children: React.ReactNode | ((search: string) => React.ReactNode);
+  children: React.ReactNode;
   email?: string;
   fullName?: string | null;
   usedBytes: number;
@@ -27,17 +28,19 @@ export function AppFrame({
   const [search, setSearch] = useState("");
 
   return (
-    <DashboardShell
-      email={email}
-      fullName={fullName}
-      usedBytes={usedBytes}
-      quotaBytes={quotaBytes}
-      breadcrumb={breadcrumb}
-      folderId={folderId}
-      search={enableSearch ? search : undefined}
-      onSearchChange={enableSearch ? setSearch : undefined}
-    >
-      {typeof children === "function" ? children(search) : children}
-    </DashboardShell>
+    <SearchProvider value={enableSearch ? search : ""}>
+      <DashboardShell
+        email={email}
+        fullName={fullName}
+        usedBytes={usedBytes}
+        quotaBytes={quotaBytes}
+        breadcrumb={breadcrumb}
+        folderId={folderId}
+        search={enableSearch ? search : undefined}
+        onSearchChange={enableSearch ? setSearch : undefined}
+      >
+        {children}
+      </DashboardShell>
+    </SearchProvider>
   );
 }

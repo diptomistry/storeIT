@@ -13,15 +13,13 @@ export default async function RecentPage() {
       quotaBytes={data.quotaBytes}
       breadcrumb={[{ id: null, name: "Recent" }]}
     >
-      {(search) => (
-        <div className="space-y-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Recent</h1>
-            <p className="mt-1 text-sm text-slate-500">Recently modified files.</p>
-          </div>
-          <FilesBrowser files={data.files} mode="recent" search={search} />
+      <div className="space-y-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Recent</h1>
+          <p className="mt-1 text-sm text-slate-500">Recently modified files.</p>
         </div>
-      )}
+        <FilesBrowser files={data.files} mode="recent" />
+      </div>
     </AppFrame>
   );
 }

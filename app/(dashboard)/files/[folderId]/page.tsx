@@ -17,17 +17,15 @@ export default async function FolderPage({ params }: Params) {
       breadcrumb={data.breadcrumb}
       folderId={folderId}
     >
-      {(search) => (
-        <div className="space-y-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {data.breadcrumb.at(-1)?.name ?? "Folder"}
-            </h1>
-            <p className="mt-1 text-sm text-slate-500">Contents of this folder.</p>
-          </div>
-          <FilesBrowser files={data.files} folders={data.folders} search={search} />
+      <div className="space-y-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {data.breadcrumb.at(-1)?.name ?? "Folder"}
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">Contents of this folder.</p>
         </div>
-      )}
+        <FilesBrowser files={data.files} folders={data.folders} />
+      </div>
     </AppFrame>
   );
 }
