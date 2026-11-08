@@ -13,7 +13,7 @@ import {
 } from "@/lib/validations/auth";
 import { getServerEnv } from "@/lib/env";
 import { requireUser } from "@/lib/auth/session";
-import { isDevBypassSecretValid, signInWithDevBypass } from "@/lib/auth/dev-bypass";
+import { isDemoAccessKeyValid, signInWithDemoAccess } from "@/lib/auth/dev-bypass";
 
 export type ActionResult = {
   error?: string;
@@ -89,22 +89,22 @@ export async function logoutAction() {
   redirect("/login");
 }
 
-export async function devBypassLoginAction(
+export async function demoAccessLoginAction(
   _prev: ActionResult,
   formData: FormData
 ): Promise<ActionResult> {
-  const secret = String(formData.get("secret") ?? "");
+  const accessKey = String(formData.get("accessKey") ?? formData.get("secret") ?? "");
   const next = String(formData.get("next") || "/dashboard");
 
-  if (!isDevBypassSecretValid(secret)) {
-    return { error: "Dev bypass is disabled or the secret key is invalid" };
+  if (!isDemoAccessKeyValid(accessKey)) {
+    return { error: "Demo access is disabled or the demo access key is invalid" };
   }
 
   try {
-    await signInWithDevBypass();
+    await signInWithDemoAccess();
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : "Dev bypass login failed",
+      error: error instanceof Error ? error.message : "Demo access login failed",
     };
   }
 

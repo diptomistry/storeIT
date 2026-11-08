@@ -5,7 +5,7 @@ import { useActionState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 import {
-  devBypassLoginAction,
+  demoAccessLoginAction,
   loginAction,
   type ActionResult,
 } from "@/app/actions/auth";
@@ -20,18 +20,18 @@ const initial: ActionResult = {};
 export function LoginForm({ showDevBypass = false }: { showDevBypass?: boolean }) {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/dashboard";
-  const bypassKey = searchParams.get("bypass") ?? "";
+  const demoKey = searchParams.get("demo") ?? searchParams.get("bypass") ?? "";
   const [state, formAction, pending] = useActionState(loginAction, initial);
-  const [devState, devFormAction, devPending] = useActionState(
-    devBypassLoginAction,
+  const [demoState, demoFormAction, demoPending] = useActionState(
+    demoAccessLoginAction,
     initial
   );
 
   useEffect(() => {
-    if (!showDevBypass || !bypassKey) return;
-    const form = document.getElementById("dev-bypass-form") as HTMLFormElement | null;
+    if (!showDevBypass || !demoKey) return;
+    const form = document.getElementById("demo-access-form") as HTMLFormElement | null;
     form?.requestSubmit();
-  }, [showDevBypass, bypassKey]);
+  }, [showDevBypass, demoKey]);
 
   return (
     <div className="space-y-6">
@@ -79,25 +79,25 @@ export function LoginForm({ showDevBypass = false }: { showDevBypass?: boolean }
         <>
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />
-            <span className="text-xs uppercase tracking-wide text-slate-400">Dev mode</span>
+            <span className="text-xs uppercase tracking-wide text-slate-400">Demo access</span>
             <Separator className="flex-1" />
           </div>
 
-          <form id="dev-bypass-form" action={devFormAction} className="space-y-4">
+          <form id="demo-access-form" action={demoFormAction} className="space-y-4">
             <input type="hidden" name="next" value={next} />
-            {devState.error ? (
+            {demoState.error ? (
               <Alert variant="destructive">
-                <AlertDescription>{devState.error}</AlertDescription>
+                <AlertDescription>{demoState.error}</AlertDescription>
               </Alert>
             ) : null}
             <div className="space-y-2">
-              <Label htmlFor="secret">Bypass secret key</Label>
+              <Label htmlFor="accessKey">Demo access key</Label>
               <Input
-                id="secret"
-                name="secret"
+                id="accessKey"
+                name="accessKey"
                 type="password"
-                defaultValue={bypassKey}
-                placeholder="Enter DEV_BYPASS_SECRET"
+                defaultValue={demoKey}
+                placeholder="Enter demo access key"
                 required
               />
             </div>
@@ -105,9 +105,9 @@ export function LoginForm({ showDevBypass = false }: { showDevBypass?: boolean }
               type="submit"
               variant="secondary"
               className="w-full"
-              disabled={devPending}
+              disabled={demoPending}
             >
-              {devPending ? "Bypassing…" : "Bypass login"}
+              {demoPending ? "Signing in…" : "Continue with demo access"}
             </Button>
             <p className="text-center text-xs text-slate-400">
               Local only. Requires <code>DEV_MODE=true</code>.

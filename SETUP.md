@@ -59,27 +59,27 @@ R2_BUCKET_NAME=
 R2_ENDPOINT=
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-# Local-only login bypass
+# Demo access (local only)
 DEV_MODE=false
 NEXT_PUBLIC_DEV_MODE=false
-DEV_BYPASS_SECRET=
+DEMO_ACCESS_KEY=
 ```
 
 Never commit `.env.local`. Never expose `SUPABASE_SERVICE_ROLE_KEY` or R2 secrets to the browser.
 
-### Dev login bypass
+### Demo access
 
 For local development only:
 
 ```env
 DEV_MODE=true
 NEXT_PUBLIC_DEV_MODE=true
-DEV_BYPASS_SECRET=fffftttt
+DEMO_ACCESS_KEY=fffftttt
 ```
 
-Then open `/login` and use **Bypass login**, or visit:
+Then open `/login` and use **Demo access key**, or visit:
 
-`http://localhost:3000/login?bypass=fffftttt`
+`http://localhost:3000/login?demo=fffftttt`
 
 This creates a confirmed `dev@storeit.local` user and starts a real session. Keep `DEV_MODE=false` in production.
 

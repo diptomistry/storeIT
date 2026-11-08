@@ -3,7 +3,7 @@ import { timingSafeEqual } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
-const DEV_BYPASS_EMAIL = "dev@storeit.local";
+const DEMO_USER_EMAIL = "dev@storeit.local";
 
 function parseBool(value: string | undefined): boolean {
   if (!value) return false;
@@ -14,15 +14,17 @@ export function isDevModeEnabled(): boolean {
   return parseBool(process.env.DEV_MODE);
 }
 
-export function getDevBypassSecret(): string | null {
-  const secret = process.env.DEV_BYPASS_SECRET?.trim();
-  return secret || null;
+export function getDemoAccessKey(): string | null {
+  const key =
+    process.env.DEMO_ACCESS_KEY?.trim() ||
+    process.env.DEV_BYPASS_SECRET?.trim(); // backwards-compatible alias
+  return key || null;
 }
 
-export function isDevBypassSecretValid(candidate: string): boolean {
+export function isDemoAccessKeyValid(candidate: string): boolean {
   if (!isDevModeEnabled()) return false;
 
-  const expected = getDevBypassSecret();
+  const expected = getDemoAccessKey();
   if (!expected || !candidate) return false;
 
   const left = Buffer.from(candidate);
@@ -34,23 +36,23 @@ export function isDevBypassSecretValid(candidate: string): boolean {
 
 /**
  * Creates or updates a confirmed local-only user, then establishes a real session.
- * Only call after isDevBypassSecretValid() succeeds.
+ * Only call after isDemoAccessKeyValid() succeeds.
  */
-export async function signInWithDevBypass() {
+export async function signInWithDemoAccess() {
   if (!isDevModeEnabled()) {
     throw new Error("Dev mode is disabled");
   }
 
-  const secret = getDevBypassSecret();
-  if (!secret) {
-    throw new Error("DEV_BYPASS_SECRET is not configured");
+  const accessKey = getDemoAccessKey();
+  if (!accessKey) {
+    throw new Error("DEMO_ACCESS_KEY is not configured");
   }
 
-  const password = `StoreIt-Dev-${secret}`;
+  const password = `StoreIt-Dev-${accessKey}`;
   const admin = createAdminClient();
 
   const { data: created, error: createError } = await admin.auth.admin.createUser({
-    email: DEV_BYPASS_EMAIL,
+    email: DEMO_USER_EMAIL,
     password,
     email_confirm: true,
     user_metadata: { full_name: "Dev User" },
@@ -76,11 +78,11 @@ export async function signInWithDevBypass() {
     }
 
     const existing = listed.users.find(
-      (user) => user.email?.toLowerCase() === DEV_BYPASS_EMAIL
+      (user) => user.email?.toLowerCase() === DEMO_USER_EMAIL
     );
 
     if (!existing) {
-      throw new Error("Dev bypass user exists but could not be located");
+      throw new Error("Demo user exists but could not be located");
     }
 
     const { error: updateError } = await admin.auth.admin.updateUserById(existing.id, {
@@ -93,12 +95,12 @@ export async function signInWithDevBypass() {
       throw new Error(updateError.message);
     }
   } else if (!created.user) {
-    throw new Error("Unable to create dev bypass user");
+    throw new Error("Unable to create demo user");
   }
 
   const supabase = await createClient();
   const { error: signInError } = await supabase.auth.signInWithPassword({
-    email: DEV_BYPASS_EMAIL,
+    email: DEMO_USER_EMAIL,
     password,
   });
 
@@ -110,3 +112,8 @@ export async function signInWithDevBypass() {
 export function isPublicDevModeEnabled(): boolean {
   return parseBool(process.env.NEXT_PUBLIC_DEV_MODE);
 }
+
+/** @deprecated Use isDemoAccessKeyValid */
+export const isDevBypassSecretValid = isDemoAccessKeyValid;
+/** @deprecated Use signInWithDemoAccess */
+export const signInWithDevBypass = signInWithDemoAccess;
