@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Store It
 
-## Getting Started
+Modern cloud file storage platform built with Next.js, Supabase Auth/PostgreSQL, and Cloudflare R2.
 
-First, run the development server:
+## Features
+
+- Email/password authentication with verification and password reset
+- Nested folders with cycle-safe moves
+- Direct-to-R2 uploads via short-lived presigned URLs
+- Soft delete / restore / permanent delete with storage accounting
+- Search, sort, star, recent, trash
+- Image / PDF / text previews
+- Storage quota enforcement (default 1 GB)
+- Row Level Security on all user-owned tables
+
+## Stack
+
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Tailwind CSS v4 + shadcn/ui
+- Supabase Auth + PostgreSQL
+- Cloudflare R2 (S3-compatible) via AWS SDK v3
+
+## Quick start
+
+1. Copy environment variables:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Fill in Supabase and R2 values (see [SETUP.md](./SETUP.md)).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Apply SQL migrations in the Supabase SQL editor (in order):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `supabase/migrations/20241108000000_initial_schema.sql`
+- `supabase/migrations/20241108000001_storage_helpers.sql`
 
-## Learn More
+4. Install and run:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm install
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | TypeScript check |
+| `npm test` | Run unit tests |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Security notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Service role and R2 secrets are server-only.
+- Upload completion verifies object size with R2 `HeadObject` before inserting metadata.
+- Ownership is always taken from the authenticated session, never from client-supplied user IDs.
+- Do not claim production readiness until you have run security testing against your deployed environment.
+
+## Project layout
+
+See `app/`, `components/`, `lib/`, and `supabase/migrations/` for the main application structure.
